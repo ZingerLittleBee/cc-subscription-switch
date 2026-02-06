@@ -2,6 +2,7 @@ import { input } from "@inquirer/prompts";
 import { getAccount, addAccount } from "../lib/config.js";
 import { createAccountDir, getAccountDir } from "../lib/accounts.js";
 import { spawnClaude } from "../lib/claude.js";
+import { promptSyncSettings } from "./sync-settings.js";
 
 export async function addCommand(name: string): Promise<void> {
   const existing = await getAccount(name);
@@ -16,6 +17,9 @@ export async function addCommand(name: string): Promise<void> {
 
   await createAccountDir(name);
   await addAccount(name, description);
+
+  // Prompt to sync settings before login
+  await promptSyncSettings(name);
 
   await input({
     message:

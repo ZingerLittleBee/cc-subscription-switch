@@ -6,6 +6,7 @@ import { addCommand } from "./commands/add.js";
 import { removeCommand } from "./commands/remove.js";
 import { listCommand } from "./commands/list.js";
 import { whoamiCommand } from "./commands/whoami.js";
+import { syncSettingsCommand } from "./commands/sync-settings.js";
 import { getConfigDir } from "./lib/config.js";
 
 const program = new Command();
@@ -56,6 +57,13 @@ program
   .description("Show config directory path")
   .action(() => {
     console.log(getConfigDir());
+  });
+
+program
+  .command("sync <name>")
+  .description("Sync settings for an account")
+  .action(async (name: string) => {
+    await syncSettingsCommand(name);
   });
 
 process.on("uncaughtException", (err) => {

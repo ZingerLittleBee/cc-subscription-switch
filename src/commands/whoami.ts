@@ -1,6 +1,4 @@
 import { loadConfig } from "../lib/config.js";
-import { getAccountDir } from "../lib/accounts.js";
-import { spawnClaudeWhoami } from "../lib/claude.js";
 
 export async function whoamiCommand(): Promise<void> {
   const config = await loadConfig();
@@ -19,6 +17,4 @@ export async function whoamiCommand(): Promise<void> {
 
   const desc = account.description ? ` - ${account.description}` : "";
   console.log(`Current account: ${account.name}${desc}`);
-
-  await spawnClaudeWhoami(getAccountDir(account.name));
 }

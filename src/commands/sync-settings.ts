@@ -221,8 +221,8 @@ export async function promptSyncSettings(accountName: string): Promise<void> {
     return
   }
 
-  if (choice === 'common') {
-    await saveAccountSettings(accountDir, commonSettings!)
+  if (choice === 'common' && commonSettings) {
+    await saveAccountSettings(accountDir, commonSettings)
     console.log('Common settings applied.')
   } else if (choice === 'global') {
     await syncFromGlobal(accountDir)

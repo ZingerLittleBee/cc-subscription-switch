@@ -8,22 +8,18 @@ import { listCommand } from "./commands/list.js";
 import { whoamiCommand } from "./commands/whoami.js";
 import { getConfigDir } from "./lib/config.js";
 
-// Split process.argv on "--" to separate ccss args from claude pass-through args
-const dashDashIndex = process.argv.indexOf("--");
-const ownArgs =
-  dashDashIndex === -1 ? process.argv : process.argv.slice(0, dashDashIndex);
-const claudeArgs =
-  dashDashIndex === -1 ? [] : process.argv.slice(dashDashIndex + 1);
-
 const program = new Command();
 
 program
   .name("ccss")
   .description("Claude Code Subscription Switch")
-  .version("1.0.0");
+  .version("1.0.0")
+  .argument("[args...]", "arguments to pass to claude")
+  .allowUnknownOption()
+  .passThroughOptions();
 
 program
-  .action(async () => {
+  .action(async (claudeArgs: string[]) => {
     await switchCommand(claudeArgs);
   });
 
@@ -69,4 +65,4 @@ process.on("uncaughtException", (err) => {
   throw err;
 });
 
-program.parse(ownArgs);
+program.parse();

@@ -6,9 +6,24 @@
   "bin": {
     "ccss": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "tsup"
+    "build": "tsup",
+    "prepublishOnly": "tsup"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "subscription",
+    "account-switch",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZingerLittleBee/cc-subscription-switch.git"
   },
   "license": "MIT",
   "dependencies": {

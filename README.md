@@ -5,9 +5,19 @@ A TUI tool for managing and switching between multiple Claude Code subscriptions
 ## Install
 
 ```bash
-bun install
-bun run build
-bun link
+# npm
+npm install -g cc-subscription-switch
+
+# bun
+bun install -g cc-subscription-switch
+```
+
+Or run directly without installing:
+
+```bash
+npx cc-subscription-switch
+# or
+bunx cc-subscription-switch
 ```
 
 ## Usage

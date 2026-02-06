@@ -54,4 +54,11 @@ program
     await whoamiCommand();
   });
 
+process.on("uncaughtException", (err) => {
+  if (err.name === "ExitPromptError") {
+    process.exit(0);
+  }
+  throw err;
+});
+
 program.parse(ownArgs);

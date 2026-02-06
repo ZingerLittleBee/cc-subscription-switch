@@ -1,5 +1,7 @@
 # CCSS - Claude Code Subscription Switch
 
+Language: 🇺🇸 English | [🇨🇳 简体中文](./README.zh.md)
+
 A TUI tool for managing and switching between multiple Claude Code subscriptions on a single machine.
 
 ## Install

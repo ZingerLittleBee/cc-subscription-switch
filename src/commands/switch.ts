@@ -37,6 +37,7 @@ export async function switchCommand(
     message: "Select account:",
     choices,
     default: config.defaultAccount || undefined,
+    loop: false,
   });
 
   if (selected === "__exit__") {
@@ -63,6 +64,7 @@ export async function switchCommand(
         new Separator(),
         { name: "← Back", value: "__back__" },
       ],
+      loop: false,
     });
     if (accountToRemove !== "__back__") {
       await removeCommand(accountToRemove);

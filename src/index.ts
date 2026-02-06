@@ -6,6 +6,7 @@ import { addCommand } from "./commands/add.js";
 import { removeCommand } from "./commands/remove.js";
 import { listCommand } from "./commands/list.js";
 import { whoamiCommand } from "./commands/whoami.js";
+import { getConfigDir } from "./lib/config.js";
 
 // Split process.argv on "--" to separate ccss args from claude pass-through args
 const dashDashIndex = process.argv.indexOf("--");
@@ -52,6 +53,13 @@ program
   .description("Show current account")
   .action(async () => {
     await whoamiCommand();
+  });
+
+program
+  .command("config")
+  .description("Show config directory path")
+  .action(() => {
+    console.log(getConfigDir());
   });
 
 process.on("uncaughtException", (err) => {

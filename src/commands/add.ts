@@ -1,7 +1,7 @@
 import { input } from "@inquirer/prompts";
 import { getAccount, addAccount } from "../lib/config.js";
 import { createAccountDir, getAccountDir } from "../lib/accounts.js";
-import { spawnClaudeLogin } from "../lib/claude.js";
+import { spawnClaude } from "../lib/claude.js";
 
 export async function addCommand(name: string): Promise<void> {
   const existing = await getAccount(name);
@@ -17,15 +17,12 @@ export async function addCommand(name: string): Promise<void> {
   await createAccountDir(name);
   await addAccount(name, description);
 
-  console.log(`\nSetting up authentication for account "${name}"...`);
-  console.log("Please follow the prompts to complete login.\n");
-  const exitCode = await spawnClaudeLogin(getAccountDir(name));
+  await input({
+    message:
+      'Next, Claude will open for login. After completing login, type "/exit" in Claude to return here. Press Enter to proceed:',
+  });
 
-  if (exitCode === 0) {
-    console.log(`\nAccount "${name}" added and authenticated successfully.`);
-  } else {
-    console.warn(
-      `\nWarning: Authentication exited with code ${exitCode}. Account "${name}" was added but login may not have completed.`,
-    );
-  }
+  await spawnClaude(getAccountDir(name), []);
+
+  console.log(`\nAccount "${name}" added successfully.`);
 }

@@ -1,4 +1,4 @@
-import { input } from "@inquirer/prompts";
+import { input, select } from "@inquirer/prompts";
 import { getAccount, addAccount } from "../lib/config.js";
 import { createAccountDir, getAccountDir, removeAccountDir } from "../lib/accounts.js";
 import { spawnClaude } from "../lib/claude.js";
@@ -21,10 +21,21 @@ export async function addCommand(name: string): Promise<void> {
   // Prompt to sync settings before login
   await promptSyncSettings(name);
 
-  await input({
+  const proceed = await select({
     message:
-      'Next, Claude will open for login. After completing login, type "/exit" in Claude to return here. Press Enter to proceed:',
+      'Next, Claude will open for login. After completing login, type "/exit" in Claude to return here.',
+    choices: [
+      { name: "Continue", value: true },
+      { name: "Cancel", value: false },
+    ],
+    loop: false,
   });
+
+  if (!proceed) {
+    await removeAccountDir(name);
+    console.log("\nAccount creation cancelled.");
+    return;
+  }
 
   const exitCode = await spawnClaude(getAccountDir(name), []);
 

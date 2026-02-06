@@ -30,6 +30,7 @@ export async function switchCommand(
     new Separator(),
     { name: "+ Add new account", value: "__add__" },
     { name: "\u2699 Remove account", value: "__remove__" },
+    { name: "✗ Exit", value: "__exit__" },
   ];
 
   const selected = await select({
@@ -37,6 +38,10 @@ export async function switchCommand(
     choices,
     default: config.defaultAccount || undefined,
   });
+
+  if (selected === "__exit__") {
+    process.exit(0);
+  }
 
   if (selected === "__add__") {
     const name = await input({

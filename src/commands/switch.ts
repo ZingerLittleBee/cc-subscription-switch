@@ -17,6 +17,7 @@ export async function switchCommand(
       message: "Enter a name for the new account:",
     });
     await addCommand(name);
+    console.log("\nPlease select an account to start:\n");
     return switchCommand(claudeArgs);
   }
 
@@ -42,6 +43,7 @@ export async function switchCommand(
       message: "Enter a name for the new account:",
     });
     await addCommand(name);
+    console.log("\nPlease select an account to start:\n");
     return switchCommand(claudeArgs);
   }
 

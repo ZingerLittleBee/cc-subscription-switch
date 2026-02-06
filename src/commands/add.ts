@@ -1,6 +1,6 @@
 import { input } from "@inquirer/prompts";
 import { getAccount, addAccount } from "../lib/config.js";
-import { createAccountDir, getAccountDir } from "../lib/accounts.js";
+import { createAccountDir, getAccountDir, removeAccountDir } from "../lib/accounts.js";
 import { spawnClaude } from "../lib/claude.js";
 import { promptSyncSettings } from "./sync-settings.js";
 
@@ -15,8 +15,8 @@ export async function addCommand(name: string): Promise<void> {
     message: "Account description (optional):",
   });
 
+  // Create account directory first (needed for settings and login)
   await createAccountDir(name);
-  await addAccount(name, description);
 
   // Prompt to sync settings before login
   await promptSyncSettings(name);
@@ -26,7 +26,15 @@ export async function addCommand(name: string): Promise<void> {
       'Next, Claude will open for login. After completing login, type "/exit" in Claude to return here. Press Enter to proceed:',
   });
 
-  await spawnClaude(getAccountDir(name), []);
+  const exitCode = await spawnClaude(getAccountDir(name), []);
 
-  console.log(`\nAccount "${name}" added successfully.`);
+  // Only add account to config after successful login
+  if (exitCode === 0) {
+    await addAccount(name, description);
+    console.log(`\nAccount "${name}" added successfully.`);
+  } else {
+    // Clean up directory if login failed/cancelled
+    await removeAccountDir(name);
+    console.log("\nAccount creation cancelled.");
+  }
 }

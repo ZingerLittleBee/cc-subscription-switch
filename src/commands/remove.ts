@@ -1,6 +1,6 @@
 import { confirm } from "@inquirer/prompts";
-import { getAccount, removeAccount } from "../lib/config.js";
 import { removeAccountDir } from "../lib/accounts.js";
+import { getAccount, removeAccount } from "../lib/config.js";
 
 export async function removeCommand(name: string): Promise<void> {
   const existing = await getAccount(name);
@@ -11,6 +11,7 @@ export async function removeCommand(name: string): Promise<void> {
 
   const confirmed = await confirm({
     message: `Are you sure you want to remove account '${name}'?`,
+    default: false,
   });
 
   if (confirmed) {

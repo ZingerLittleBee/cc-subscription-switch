@@ -49,10 +49,10 @@ export function spawnClaude(configDir: string, args: string[]): Promise<number> 
 }
 
 /**
- * Spawn `claude login` with the given config directory.
+ * Spawn `claude setup-token` with the given config directory.
  */
 export function spawnClaudeLogin(configDir: string): Promise<number> {
-  return spawnClaude(configDir, ["login"]);
+  return spawnClaude(configDir, ["setup-token"]);
 }
 
 /**

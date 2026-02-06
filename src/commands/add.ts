@@ -17,14 +17,15 @@ export async function addCommand(name: string): Promise<void> {
   await createAccountDir(name);
   await addAccount(name, description);
 
-  console.log(`Running 'claude login' for account "${name}"...`);
+  console.log(`\nSetting up authentication for account "${name}"...`);
+  console.log("Please follow the prompts to complete login.\n");
   const exitCode = await spawnClaudeLogin(getAccountDir(name));
 
   if (exitCode === 0) {
-    console.log(`Account "${name}" added and logged in successfully.`);
+    console.log(`\nAccount "${name}" added and authenticated successfully.`);
   } else {
     console.warn(
-      `Warning: 'claude login' exited with code ${exitCode}. Account "${name}" was added but login may not have completed.`,
+      `\nWarning: Authentication exited with code ${exitCode}. Account "${name}" was added but login may not have completed.`,
     );
   }
 }

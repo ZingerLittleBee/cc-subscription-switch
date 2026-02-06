@@ -22,9 +22,8 @@ program
   .version("1.0.0");
 
 program
-  .option("-s, --select", "Force account selector even with single account")
-  .action(async (options: { select?: boolean }) => {
-    await switchCommand(claudeArgs, options.select);
+  .action(async () => {
+    await switchCommand(claudeArgs);
   });
 
 program

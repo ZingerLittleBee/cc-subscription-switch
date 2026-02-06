@@ -7,7 +7,7 @@
     "ccss": "./dist/index.js"
   },
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "bun run src/index.ts",
     "build": "tsup"
   },
   "license": "MIT",
@@ -18,7 +18,6 @@
   "devDependencies": {
     "@types/node": "^25.2.1",
     "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

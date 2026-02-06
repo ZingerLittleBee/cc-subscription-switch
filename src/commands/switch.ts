@@ -3,7 +3,7 @@ import { loadConfig, saveConfig } from "../lib/config.js";
 import { getAccountDir } from "../lib/accounts.js";
 import { checkClaudeInstalled, spawnClaude } from "../lib/claude.js";
 import { addCommand } from "./add.js";
-import { listCommand } from "./list.js";
+import { removeCommand } from "./remove.js";
 
 export async function switchCommand(
   claudeArgs: string[],
@@ -28,7 +28,7 @@ export async function switchCommand(
     })),
     new Separator(),
     { name: "+ Add new account", value: "__add__" },
-    { name: "\u2699 Manage accounts", value: "__manage__" },
+    { name: "\u2699 Remove account", value: "__remove__" },
   ];
 
   const selected = await select({
@@ -45,9 +45,22 @@ export async function switchCommand(
     return switchCommand(claudeArgs);
   }
 
-  if (selected === "__manage__") {
-    await listCommand();
-    return;
+  if (selected === "__remove__") {
+    const accountToRemove = await select({
+      message: "Select account to remove:",
+      choices: [
+        ...config.accounts.map((account) => ({
+          name: `${account.name}${account.description ? ` - ${account.description}` : ""}`,
+          value: account.name,
+        })),
+        new Separator(),
+        { name: "← Back", value: "__back__" },
+      ],
+    });
+    if (accountToRemove !== "__back__") {
+      await removeCommand(accountToRemove);
+    }
+    return switchCommand(claudeArgs);
   }
 
   const selectedName = selected;

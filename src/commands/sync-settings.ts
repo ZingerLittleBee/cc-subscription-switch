@@ -195,27 +195,42 @@ async function doSaveAsCommon(settings: ClaudeSettings): Promise<void> {
 
 export async function promptSyncSettings(accountName: string): Promise<void> {
   const commonSettings = await loadCommonSettings();
+  const commonPath = getCommonSettingsPath();
+  const accountDir = getAccountDir(accountName);
 
-  if (commonSettings) {
-    const shouldSync = await confirm({
-      message: "Apply common settings to this account?",
-      default: true,
-    });
+  const choices = [
+    ...(commonSettings
+      ? [
+          {
+            name: `Apply common settings (${commonPath})`,
+            value: "common",
+          },
+        ]
+      : []),
+    {
+      name: "Sync from global settings (~/.claude/settings.json)",
+      value: "global",
+    },
+    { name: "Edit settings manually", value: "manual" },
+    { name: "Skip", value: "skip" },
+  ];
 
-    if (shouldSync) {
-      const accountDir = getAccountDir(accountName);
-      await saveAccountSettings(accountDir, commonSettings);
-      console.log("Common settings applied.");
-      return;
-    }
-  }
-
-  const shouldConfigure = await confirm({
-    message: "Would you like to configure settings for this account?",
-    default: false,
+  const choice = await select({
+    message: "Configure settings for this account?",
+    choices,
+    loop: false,
   });
 
-  if (shouldConfigure) {
-    await syncSettingsCommand(accountName);
+  if (choice === "skip") {
+    return;
+  }
+
+  if (choice === "common") {
+    await saveAccountSettings(accountDir, commonSettings!);
+    console.log("Common settings applied.");
+  } else if (choice === "global") {
+    await syncFromGlobal(accountDir);
+  } else if (choice === "manual") {
+    await editManually(accountDir);
   }
 }

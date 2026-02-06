@@ -41,6 +41,9 @@ ccss whoami
 
 # Show config directory path
 ccss config
+
+# Sync settings for an account
+ccss sync <name>
 ```
 
 ## How it works
@@ -51,9 +54,25 @@ Each account's Claude configuration is stored in an isolated directory under `~/
 
 1. Run `ccss add <name>`
 2. Enter an optional description
-3. Claude opens for first-time login (onboarding)
-4. Complete the login, then type `/exit` in Claude to return
-5. Account is ready to use
+3. Configure settings (optional):
+   - Apply common settings from `~/.cc-subscription-switch/settings.json`
+   - Sync from global settings `~/.claude/settings.json` (excludes account-specific fields and env)
+   - Edit settings manually
+4. Claude opens for first-time login (onboarding)
+5. Complete the login, then type `/exit` in Claude to return
+6. Account is added after successful login
+
+### Settings sync
+
+CCSS supports syncing settings between accounts:
+
+- **Common settings**: Shared settings stored at `~/.cc-subscription-switch/settings.json`
+- **Global settings**: Your main Claude settings at `~/.claude/settings.json`
+
+When syncing from global settings, account-specific fields are excluded:
+- `accountId`, `userId`, `email`, `oauthAccount`, `primaryOrganization`, `env`
+
+Use `ccss sync <name>` to configure settings for an existing account, or save current account settings as common.
 
 ## Development
 

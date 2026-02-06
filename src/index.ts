@@ -1,76 +1,75 @@
 #!/usr/bin/env node
 
-import { Command } from "commander";
-import { switchCommand } from "./commands/switch.js";
-import { addCommand } from "./commands/add.js";
-import { removeCommand } from "./commands/remove.js";
-import { listCommand } from "./commands/list.js";
-import { whoamiCommand } from "./commands/whoami.js";
-import { syncSettingsCommand } from "./commands/sync-settings.js";
-import { getConfigDir } from "./lib/config.js";
+import { Command } from 'commander'
+import { addCommand } from './commands/add.js'
+import { listCommand } from './commands/list.js'
+import { removeCommand } from './commands/remove.js'
+import { switchCommand } from './commands/switch.js'
+import { syncSettingsCommand } from './commands/sync-settings.js'
+import { whoamiCommand } from './commands/whoami.js'
+import { getConfigDir } from './lib/config.js'
 
-const program = new Command();
+const program = new Command()
 
 program
-  .name("ccss")
-  .description("Claude Code Subscription Switch")
-  .version("1.0.0")
-  .argument("[args...]", "arguments to pass to claude")
+  .name('ccss')
+  .description('Claude Code Subscription Switch')
+  .version('1.0.0')
+  .argument('[args...]', 'arguments to pass to claude')
   .allowUnknownOption()
-  .passThroughOptions();
+  .passThroughOptions()
+
+program.action(async (claudeArgs: string[]) => {
+  await switchCommand(claudeArgs)
+})
 
 program
-  .action(async (claudeArgs: string[]) => {
-    await switchCommand(claudeArgs);
-  });
-
-program
-  .command("add <name>")
-  .description("Add a new account")
+  .command('add <name>')
+  .description('Add a new account')
   .action(async (name: string) => {
-    await addCommand(name);
-  });
+    await addCommand(name)
+  })
 
 program
-  .command("remove <name>")
-  .description("Remove an account")
+  .command('remove <name>')
+  .description('Remove an account')
   .action(async (name: string) => {
-    await removeCommand(name);
-  });
+    await removeCommand(name)
+  })
 
 program
-  .command("list")
-  .description("List all accounts")
+  .command('list')
+  .description('List all accounts')
   .action(async () => {
-    await listCommand();
-  });
+    await listCommand()
+  })
 
 program
-  .command("whoami")
-  .description("Show current account")
+  .command('whoami')
+  .description('Show current account')
   .action(async () => {
-    await whoamiCommand();
-  });
+    await whoamiCommand()
+  })
 
 program
-  .command("config")
-  .description("Show config directory path")
+  .command('config')
+  .description('Show config directory path')
   .action(() => {
-    console.log(getConfigDir());
-  });
+    console.log(getConfigDir())
+  })
 
 program
-  .command("sync <name>")
-  .description("Sync settings for an account")
+  .command('sync <name>')
+  .description('Sync settings for an account')
   .action(async (name: string) => {
-    await syncSettingsCommand(name);
-  });
+    await syncSettingsCommand(name)
+  })
 
-process.on("uncaughtException", (err) => {
-  if (err.name === "ExitPromptError") {
-    process.exit(0);
+process.on('uncaughtException', (err) => {
+  if (err.name === 'ExitPromptError') {
+    process.exit(0)
   }
-  throw err;
-});
+  throw err
+})
 
-program.parse();
+program.parse()

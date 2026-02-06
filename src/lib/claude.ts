@@ -1,14 +1,14 @@
-import { execSync, spawn } from "node:child_process";
+import { execSync, spawn } from 'node:child_process'
 
 /**
  * Check if the `claude` CLI command is installed and available in PATH.
  */
 export function checkClaudeInstalled(): Promise<boolean> {
   try {
-    execSync("which claude", { stdio: "ignore" });
-    return Promise.resolve(true);
+    execSync('which claude', { stdio: 'ignore' })
+    return Promise.resolve(true)
   } catch {
-    return Promise.resolve(false);
+    return Promise.resolve(false)
   }
 }
 
@@ -19,32 +19,31 @@ export function checkClaudeInstalled(): Promise<boolean> {
  */
 export function spawnClaude(configDir: string, args: string[]): Promise<number> {
   return new Promise((resolve, reject) => {
-    const child = spawn("claude", args, {
+    const child = spawn('claude', args, {
       env: {
         ...process.env,
-        CLAUDE_CONFIG_DIR: configDir,
+        CLAUDE_CONFIG_DIR: configDir
       },
-      stdio: "inherit",
-    });
+      stdio: 'inherit'
+    })
 
     const forwardSignal = (signal: NodeJS.Signals) => {
-      child.kill(signal);
-    };
+      child.kill(signal)
+    }
 
-    process.on("SIGINT", forwardSignal);
-    process.on("SIGTERM", forwardSignal);
+    process.on('SIGINT', forwardSignal)
+    process.on('SIGTERM', forwardSignal)
 
-    child.on("close", (code) => {
-      process.removeListener("SIGINT", forwardSignal);
-      process.removeListener("SIGTERM", forwardSignal);
-      resolve(code ?? 1);
-    });
+    child.on('close', (code) => {
+      process.removeListener('SIGINT', forwardSignal)
+      process.removeListener('SIGTERM', forwardSignal)
+      resolve(code ?? 1)
+    })
 
-    child.on("error", (err) => {
-      process.removeListener("SIGINT", forwardSignal);
-      process.removeListener("SIGTERM", forwardSignal);
-      reject(err);
-    });
-  });
+    child.on('error', (err) => {
+      process.removeListener('SIGINT', forwardSignal)
+      process.removeListener('SIGTERM', forwardSignal)
+      reject(err)
+    })
+  })
 }
-

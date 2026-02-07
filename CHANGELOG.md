@@ -8,6 +8,7 @@
   - Bordered prompts (`p.note`), semantic colors, and structured log output (`p.log.*`)
   - Account names in `cyan`, default marker in `green`, status in `green`/`red`, descriptions in `dim`
 - Add `src/lib/editor.ts` — custom `$EDITOR`-based editing since `@clack/prompts` lacks a built-in editor prompt
+- Add skills directory sync prompt during account setup — symlink (recommended), copy, or skip
 
 ### Changed
 

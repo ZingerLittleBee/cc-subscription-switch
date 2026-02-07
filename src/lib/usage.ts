@@ -91,25 +91,12 @@ export async function getAccountUsage(accountName: string): Promise<UsageData | 
     return null
   }
 
-  const token = await ensureValidToken(configDirPath, credentials)
+  const token = await ensureValidToken(credentials)
   if (!token) {
     return null
   }
 
-  let data = await fetchUsage(token)
-
-  // Retry once on failure (token may have been stale)
-  if (!data) {
-    const freshCredentials = readKeychainCredentials(configDirPath)
-    if (!freshCredentials) {
-      return null
-    }
-    const freshToken = await ensureValidToken(configDirPath, freshCredentials)
-    if (!freshToken || freshToken === token) {
-      return null
-    }
-    data = await fetchUsage(freshToken)
-  }
+  const data = await fetchUsage(token)
 
   if (data) {
     await writeCache(accountName, data)

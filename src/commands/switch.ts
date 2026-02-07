@@ -39,13 +39,12 @@ export async function switchCommand(claudeArgs: string[]): Promise<void> {
   const options = [
     ...config.accounts.map((account) => {
       const usage = usageMap.get(account.name)
-      const usageStr = usage ? renderInlineUsage(usage) : ''
-      const baseHint = account.description || ''
-      const hint = [baseHint, usageStr].filter(Boolean).join('  ') || undefined
+      const usageStr = usage ? `  ${renderInlineUsage(usage)}` : ''
+      const label = `${account.name}${usageStr}`
       return {
-        label: account.name,
+        label,
         value: account.name,
-        hint
+        hint: account.description || undefined
       }
     }),
     { label: pc.dim('+ Add new account'), value: '__add__', hint: 'action' },

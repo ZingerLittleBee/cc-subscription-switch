@@ -26,10 +26,6 @@ export function hexDecode(hex: string): string {
   return Buffer.from(hex, 'hex').toString('utf-8')
 }
 
-export function hexEncode(value: string): string {
-  return Buffer.from(value, 'utf-8').toString('hex')
-}
-
 export function readKeychainCredentials(configDirPath: string): KeychainCredentials | null {
   if (process.platform !== 'darwin') {
     return null
@@ -50,33 +46,5 @@ export function readKeychainCredentials(configDirPath: string): KeychainCredenti
     return parsed
   } catch {
     return null
-  }
-}
-
-export function writeKeychainCredentials(configDirPath: string, credentials: KeychainCredentials): boolean {
-  if (process.platform !== 'darwin') {
-    return false
-  }
-
-  try {
-    const suffix = computeKeychainSuffix(configDirPath)
-    const service = `Claude Code-credentials${suffix}`
-    const account = userInfo().username
-    const encoded = hexEncode(JSON.stringify(credentials))
-
-    // Delete existing entry first (ignore errors if it doesn't exist)
-    try {
-      execSync(`security delete-generic-password -s "${service}" -a "${account}"`, { stdio: ['pipe', 'pipe', 'pipe'] })
-    } catch {
-      // Entry may not exist, that's fine
-    }
-
-    execSync(`security add-generic-password -s "${service}" -a "${account}" -w "${encoded}"`, {
-      stdio: ['pipe', 'pipe', 'pipe']
-    })
-
-    return true
-  } catch {
-    return false
   }
 }

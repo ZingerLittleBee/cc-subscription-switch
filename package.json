@@ -1,6 +1,6 @@
 {
   "name": "cc-subscription-switch",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Claude Code Subscription Switch - TUI tool for managing multiple Claude Code subscriptions",
   "type": "module",
   "bin": {

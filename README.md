@@ -45,10 +45,10 @@ ccss add <name>
 # Remove an account
 ccss remove <name>
 
-# List all accounts
+# List all accounts (with usage bars)
 ccss list
 
-# Show current account
+# Show current account (with usage bars)
 ccss whoami
 
 # Show config directory path
@@ -57,6 +57,18 @@ ccss config
 # Sync settings for an account
 ccss sync <name>
 ```
+
+### Usage metrics
+
+```bash
+# Show usage for current account
+ccss usage
+
+# Show usage for all accounts
+ccss usage --all
+```
+
+Displays 5-hour and 7-day utilization as color-coded progress bars (green → yellow → red), plus extra credits if enabled. Data is cached for 5 minutes. Requires macOS (reads OAuth credentials from Keychain or `.credentials.json`).
 
 ## How it works
 

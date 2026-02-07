@@ -45,10 +45,10 @@ ccss add <name>
 # 删除账号
 ccss remove <name>
 
-# 列出所有账号
+# 列出所有账号（附带用量进度条）
 ccss list
 
-# 显示当前账号
+# 显示当前账号（附带用量进度条）
 ccss whoami
 
 # 显示配置目录路径
@@ -57,6 +57,18 @@ ccss config
 # 同步账号设置
 ccss sync <name>
 ```
+
+### 用量查看
+
+```bash
+# 查看当前账号用量
+ccss usage
+
+# 查看所有账号用量
+ccss usage --all
+```
+
+显示 5 小时和 7 天利用率的彩色进度条（绿色 → 黄色 → 红色），以及额外积分使用情况（如已启用）。数据缓存 5 分钟。需要 macOS（从 Keychain 或 `.credentials.json` 读取 OAuth 凭证）。
 
 ## 工作原理
 

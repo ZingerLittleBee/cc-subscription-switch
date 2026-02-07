@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0] - 2026-02-08
+
+### Added
+
+- `ccss usage` — show usage metrics (5-hour / 7-day / 7-day sonnet utilization, extra credits) for the current account
+  - `ccss usage --all` — show usage for all accounts
+- Inline usage progress bars in `ccss list`, `ccss whoami`, and the interactive account selector
+- OAuth token auto-refresh — expired tokens are refreshed transparently via the Anthropic OAuth endpoint
+- Credential loading supports both `.credentials.json` file and macOS Keychain, with automatic source detection
+- Usage data cached for 5 minutes at `~/.cc-subscription-switch/accounts/<name>/.usage-cache.json`
+- Color-coded progress bars: green (0–50%), yellow (50–80%), red (80–100%)
+
 ## [1.1.0] - 2026-02-07
 
 ### Added

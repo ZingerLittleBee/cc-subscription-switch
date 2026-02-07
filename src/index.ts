@@ -15,7 +15,7 @@ const program = new Command()
 program
   .name('ccss')
   .description('Claude Code Subscription Switch')
-  .version('1.1.0')
+  .version('1.2.0')
   .argument('[args...]', 'arguments to pass to claude')
   .allowUnknownOption()
   .passThroughOptions()

@@ -2,6 +2,7 @@ import * as p from '@clack/prompts'
 import pc from 'picocolors'
 import { getAccountDir } from '../lib/accounts.js'
 import { openEditor } from '../lib/editor.js'
+import { copySkills, globalSkillsExist, symlinkSkills } from '../lib/skills.js'
 import {
   type ClaudeSettings,
   filterSyncableSettings,
@@ -257,5 +258,36 @@ export async function promptSyncSettings(accountName: string): Promise<void> {
     await syncFromGlobal(accountDir)
   } else if (choice === 'manual') {
     await editManually(accountDir)
+  }
+
+  await promptSyncSkills(accountDir)
+}
+
+async function promptSyncSkills(accountDir: string): Promise<void> {
+  const hasSkills = await globalSkillsExist()
+  if (!hasSkills) {
+    return
+  }
+
+  const method = await p.select({
+    message: 'Sync skills directory from ~/.claude/skills?',
+    options: [
+      { label: 'Symlink', value: 'symlink', hint: 'recommended, shares the same directory' },
+      { label: 'Copy', value: 'copy', hint: 'independent copy' },
+      { label: 'Skip', value: 'skip' }
+    ]
+  })
+
+  if (p.isCancel(method)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
+
+  if (method === 'symlink') {
+    await symlinkSkills(accountDir)
+    p.log.success('Skills directory symlinked.')
+  } else if (method === 'copy') {
+    await copySkills(accountDir)
+    p.log.success('Skills directory copied.')
   }
 }

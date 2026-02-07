@@ -17,7 +17,8 @@ export async function refreshToken(credentials: KeychainCredentials): Promise<Ke
       body: JSON.stringify({
         grant_type: 'refresh_token',
         client_id: OAUTH_CLIENT_ID,
-        refresh_token: credentials.claudeAiOauth.refreshToken
+        refresh_token: credentials.claudeAiOauth.refreshToken,
+        scope: 'user:profile user:inference user:sessions:claude_code user:mcp_servers'
       })
     })
 

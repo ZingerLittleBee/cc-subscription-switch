@@ -33,14 +33,13 @@ export function renderInlineUsage(data: UsageData): string {
 }
 
 export function renderFullUsage(data: UsageData): string {
-  const fiveH = data.five_hour.utilization
-  const sevenD = data.seven_day.utilization
-  const sevenDSonnet = data.seven_day_sonnet.utilization
   const lines = [
-    `  5-hour:         ${renderProgressBar(fiveH)}`,
-    `  7-day:          ${renderProgressBar(sevenD)}`,
-    `  7-day (sonnet): ${renderProgressBar(sevenDSonnet)}`
+    `  5-hour:         ${renderProgressBar(data.five_hour.utilization)}`,
+    `  7-day:          ${renderProgressBar(data.seven_day.utilization)}`
   ]
+  if (data.seven_day_sonnet) {
+    lines.push(`  7-day (sonnet): ${renderProgressBar(data.seven_day_sonnet.utilization)}`)
+  }
   if (data.extra_usage.is_enabled && data.extra_usage.monthly_limit != null && data.extra_usage.used_credits != null) {
     lines.push(`  Extra credits:  ${renderCredits(data.extra_usage.used_credits, data.extra_usage.monthly_limit)}`)
   }

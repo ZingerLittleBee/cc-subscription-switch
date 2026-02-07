@@ -17,7 +17,7 @@ export interface ExtraUsageMetric {
 export interface UsageData {
   five_hour: UtilizationMetric
   seven_day: UtilizationMetric
-  seven_day_sonnet: UtilizationMetric
+  seven_day_sonnet: UtilizationMetric | null
   extra_usage: ExtraUsageMetric
 }
 

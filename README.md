@@ -70,9 +70,13 @@ Each account's Claude configuration is stored in an isolated directory under `~/
    - Apply common settings from `~/.cc-subscription-switch/settings.json`
    - Sync from global settings `~/.claude/settings.json` (excludes account-specific fields and env)
    - Edit settings manually
-4. Claude opens for first-time login (onboarding)
-5. Complete the login, then type `/exit` in Claude to return
-6. Account is added after successful login
+4. Sync skills directory (optional, if `~/.claude/skills/` exists):
+   - **Symlink** (recommended) — shares the same directory, changes are reflected in all accounts
+   - **Copy** — creates an independent copy
+   - **Skip**
+5. Claude opens for first-time login (onboarding)
+6. Complete the login, then type `/exit` in Claude to return
+7. Account is added after successful login
 
 ### Settings sync
 
@@ -85,6 +89,14 @@ When syncing from global settings, account-specific fields are excluded:
 - `accountId`, `userId`, `email`, `oauthAccount`, `primaryOrganization`, `env`
 
 Use `ccss sync <name>` to configure settings for an existing account, or save current account settings as common.
+
+### Skills sync
+
+When adding an account or running `ccss sync <name>`, if `~/.claude/skills/` exists and is non-empty, you'll be prompted to sync the skills directory:
+
+- **Symlink**: Creates a symbolic link to `~/.claude/skills/` — all accounts share the same skills, any changes are reflected everywhere.
+- **Copy**: Creates an independent copy of the skills directory for this account.
+- **Skip**: Don't sync skills.
 
 ## Development
 

@@ -1,4 +1,5 @@
-import { input, Separator, select } from '@inquirer/prompts'
+import * as p from '@clack/prompts'
+import pc from 'picocolors'
 import { getAccountDir } from '../lib/accounts.js'
 import { checkClaudeInstalled, spawnClaude } from '../lib/claude.js'
 import { loadConfig, saveConfig } from '../lib/config.js'
@@ -10,60 +11,89 @@ export async function switchCommand(claudeArgs: string[]): Promise<void> {
 
   // If no accounts, auto-enter add flow
   if (config.accounts.length === 0) {
-    console.log("No accounts configured. Let's add one.")
-    const name = await input({
-      message: 'Enter a name for the new account:'
+    p.log.info("No accounts configured. Let's add one.")
+    const name = await p.text({
+      message: 'Enter a name for the new account:',
+      validate: (value) => {
+        if (!value.trim()) return 'Account name is required'
+      }
     })
+
+    if (p.isCancel(name)) {
+      p.cancel('Operation cancelled')
+      process.exit(0)
+    }
+
     await addCommand(name)
-    console.log('\nPlease select an account to start:\n')
+    p.log.step('Please select an account to start:')
     return switchCommand(claudeArgs)
   }
 
   // Show interactive selector
-  const choices = [
+  const options = [
     ...config.accounts.map((account) => ({
-      name: `${account.name}${account.description ? ` - ${account.description}` : ''}`,
-      value: account.name
+      label: account.name,
+      value: account.name,
+      hint: account.description || undefined
     })),
-    new Separator(),
-    { name: '+ Add new account', value: '__add__' },
-    { name: '\u2699 Remove account', value: '__remove__' },
-    { name: '✗ Exit', value: '__exit__' }
+    { label: pc.dim('+ Add new account'), value: '__add__', hint: 'action' },
+    { label: pc.dim('\u2699 Remove account'), value: '__remove__', hint: 'action' },
+    { label: pc.dim('✗ Exit'), value: '__exit__', hint: 'action' }
   ]
 
-  const selected = await select({
+  const selected = await p.select({
     message: 'Select account:',
-    choices,
-    default: config.defaultAccount || undefined,
-    loop: false
+    options,
+    initialValue: config.defaultAccount || undefined
   })
+
+  if (p.isCancel(selected)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (selected === '__exit__') {
     process.exit(0)
   }
 
   if (selected === '__add__') {
-    const name = await input({
-      message: 'Enter a name for the new account:'
+    const name = await p.text({
+      message: 'Enter a name for the new account:',
+      validate: (value) => {
+        if (!value.trim()) return 'Account name is required'
+      }
     })
+
+    if (p.isCancel(name)) {
+      p.cancel('Operation cancelled')
+      process.exit(0)
+    }
+
     await addCommand(name)
-    console.log('\nPlease select an account to start:\n')
+    p.log.step('Please select an account to start:')
     return switchCommand(claudeArgs)
   }
 
   if (selected === '__remove__') {
-    const accountToRemove = await select({
+    const removeOptions = [
+      ...config.accounts.map((account) => ({
+        label: account.name,
+        value: account.name,
+        hint: account.description || undefined
+      })),
+      { label: pc.dim('← Back'), value: '__back__', hint: 'action' }
+    ]
+
+    const accountToRemove = await p.select({
       message: 'Select account to remove:',
-      choices: [
-        ...config.accounts.map((account) => ({
-          name: `${account.name}${account.description ? ` - ${account.description}` : ''}`,
-          value: account.name
-        })),
-        new Separator(),
-        { name: '← Back', value: '__back__' }
-      ],
-      loop: false
+      options: removeOptions
     })
+
+    if (p.isCancel(accountToRemove)) {
+      p.cancel('Operation cancelled')
+      process.exit(0)
+    }
+
     if (accountToRemove !== '__back__') {
       await removeCommand(accountToRemove)
     }
@@ -75,7 +105,7 @@ export async function switchCommand(claudeArgs: string[]): Promise<void> {
   // Check claude is installed
   const installed = await checkClaudeInstalled()
   if (!installed) {
-    console.error("Error: 'claude' CLI not found. Please install Claude Code first.")
+    p.log.error(pc.red("Error: 'claude' CLI not found. Please install Claude Code first."))
     process.exit(1)
   }
 

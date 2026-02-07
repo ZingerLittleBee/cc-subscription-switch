@@ -1,5 +1,8 @@
-import { confirm, editor, select } from '@inquirer/prompts'
+import * as p from '@clack/prompts'
+import pc from 'picocolors'
 import { getAccountDir } from '../lib/accounts.js'
+import { openEditor } from '../lib/editor.js'
+import { copySkills, globalSkillsExist, symlinkSkills } from '../lib/skills.js'
 import {
   type ClaudeSettings,
   filterSyncableSettings,
@@ -19,36 +22,43 @@ export async function syncSettingsCommand(accountName: string): Promise<void> {
   const accountSettings = await loadAccountSettings(accountDir)
   const commonPath = getCommonSettingsPath()
 
-  const choices = [
+  const options = [
     ...(commonSettings
       ? [
           {
-            name: `Sync from common settings (${commonPath})`,
-            value: 'common'
+            label: 'Sync from common settings',
+            value: 'common',
+            hint: commonPath
           }
         ]
       : []),
     {
-      name: 'Sync from global settings (~/.claude/settings.json)',
-      value: 'global'
+      label: 'Sync from global settings',
+      value: 'global',
+      hint: '~/.claude/settings.json'
     },
-    { name: 'Edit settings manually', value: 'manual' },
+    { label: 'Edit settings manually', value: 'manual' },
     ...(accountSettings
       ? [
           {
-            name: `Save current settings to common (${commonPath})`,
-            value: 'save-common'
+            label: 'Save current settings to common',
+            value: 'save-common',
+            hint: commonPath
           }
         ]
       : []),
-    { name: 'Skip', value: 'skip' }
+    { label: 'Skip', value: 'skip' }
   ]
 
-  const choice = await select({
+  const choice = await p.select({
     message: 'How would you like to configure settings?',
-    choices,
-    loop: false
+    options
   })
+
+  if (p.isCancel(choice)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (choice === 'skip') {
     return
@@ -69,22 +79,25 @@ async function syncFromCommon(accountDir: string): Promise<void> {
   const commonSettings = await loadCommonSettings()
 
   if (!commonSettings) {
-    console.log('No common settings found.')
+    p.log.info('No common settings found.')
     return
   }
 
-  console.log('\nCommon settings to apply:\n')
-  console.log(formatSettingsForDisplay(commonSettings))
-  console.log()
+  p.note(formatSettingsForDisplay(commonSettings), 'Common settings to apply')
 
-  const shouldSync = await confirm({
+  const shouldSync = await p.confirm({
     message: 'Apply these settings to this account?',
-    default: true
+    initialValue: true
   })
+
+  if (p.isCancel(shouldSync)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (shouldSync) {
     await saveAccountSettings(accountDir, commonSettings)
-    console.log('Settings synced successfully.')
+    p.log.success('Settings synced successfully.')
   }
 }
 
@@ -92,11 +105,16 @@ async function syncFromGlobal(accountDir: string): Promise<void> {
   const globalSettings = await loadGlobalSettings()
 
   if (!globalSettings) {
-    console.log('No global settings found at ~/.claude/settings.json')
-    const shouldEdit = await confirm({
-      message: 'Would you like to create settings manually?',
-      default: false
+    p.log.info('No global settings found at ~/.claude/settings.json')
+    const shouldEdit = await p.confirm({
+      message: 'Would you like to create settings manually?'
     })
+
+    if (p.isCancel(shouldEdit)) {
+      p.cancel('Operation cancelled')
+      process.exit(0)
+    }
+
     if (shouldEdit) {
       await editManually(accountDir)
     }
@@ -105,18 +123,21 @@ async function syncFromGlobal(accountDir: string): Promise<void> {
 
   const syncableSettings = filterSyncableSettings(globalSettings)
 
-  console.log('\nSettings to sync (account-specific fields and env excluded):\n')
-  console.log(formatSettingsForDisplay(syncableSettings))
-  console.log()
+  p.note(formatSettingsForDisplay(syncableSettings), 'Settings to sync (account-specific fields and env excluded)')
 
-  const shouldSync = await confirm({
+  const shouldSync = await p.confirm({
     message: 'Apply these settings to this account?',
-    default: true
+    initialValue: true
   })
+
+  if (p.isCancel(shouldSync)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (shouldSync) {
     await saveAccountSettings(accountDir, syncableSettings)
-    console.log('Settings synced successfully.')
+    p.log.success('Settings synced successfully.')
 
     await promptSaveAsCommon(syncableSettings)
   }
@@ -126,21 +147,17 @@ async function editManually(accountDir: string): Promise<void> {
   const existingSettings = await loadAccountSettings(accountDir)
   const initialContent = existingSettings ? formatSettingsForDisplay(existingSettings) : '{\n  \n}'
 
-  const edited = await editor({
-    message: 'Edit settings (JSON format):',
-    default: initialContent,
-    postfix: '.json'
-  })
+  const edited = await openEditor(initialContent, '.json')
 
   const parsed = parseSettingsFromInput(edited)
 
   if (!parsed) {
-    console.error('Invalid JSON. Settings not saved.')
+    p.log.error(pc.red('Invalid JSON. Settings not saved.'))
     return
   }
 
   await saveAccountSettings(accountDir, parsed as ClaudeSettings)
-  console.log('Settings saved successfully.')
+  p.log.success('Settings saved successfully.')
 
   await promptSaveAsCommon(parsed as ClaudeSettings)
 }
@@ -149,7 +166,7 @@ async function saveAsCommon(accountDir: string): Promise<void> {
   const accountSettings = await loadAccountSettings(accountDir)
 
   if (!accountSettings) {
-    console.log('No settings found for this account.')
+    p.log.info('No settings found for this account.')
     return
   }
 
@@ -159,33 +176,40 @@ async function saveAsCommon(accountDir: string): Promise<void> {
 
 async function promptSaveAsCommon(settings: ClaudeSettings): Promise<void> {
   const commonPath = getCommonSettingsPath()
-  const shouldSave = await confirm({
-    message: `Save as common settings? (${commonPath})`,
-    default: false
+  const shouldSave = await p.confirm({
+    message: `Save as common settings? (${commonPath})`
   })
+
+  if (p.isCancel(shouldSave)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (shouldSave) {
     const syncableSettings = filterSyncableSettings(settings)
     await saveCommonSettings(syncableSettings)
-    console.log('Common settings saved successfully.')
+    p.log.success('Common settings saved successfully.')
   }
 }
 
 async function doSaveAsCommon(settings: ClaudeSettings): Promise<void> {
   const commonPath = getCommonSettingsPath()
 
-  console.log('\nSettings to save as common:\n')
-  console.log(formatSettingsForDisplay(settings))
-  console.log()
+  p.note(formatSettingsForDisplay(settings), 'Settings to save as common')
 
-  const shouldSave = await confirm({
+  const shouldSave = await p.confirm({
     message: `Save to ${commonPath}?`,
-    default: true
+    initialValue: true
   })
+
+  if (p.isCancel(shouldSave)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (shouldSave) {
     await saveCommonSettings(settings)
-    console.log('Common settings saved successfully.')
+    p.log.success('Common settings saved successfully.')
   }
 }
 
@@ -194,28 +218,34 @@ export async function promptSyncSettings(accountName: string): Promise<void> {
   const commonPath = getCommonSettingsPath()
   const accountDir = getAccountDir(accountName)
 
-  const choices = [
+  const options = [
     ...(commonSettings
       ? [
           {
-            name: `Apply common settings (${commonPath})`,
-            value: 'common'
+            label: 'Apply common settings',
+            value: 'common',
+            hint: commonPath
           }
         ]
       : []),
     {
-      name: 'Sync from global settings (~/.claude/settings.json)',
-      value: 'global'
+      label: 'Sync from global settings',
+      value: 'global',
+      hint: '~/.claude/settings.json'
     },
-    { name: 'Edit settings manually', value: 'manual' },
-    { name: 'Skip', value: 'skip' }
+    { label: 'Edit settings manually', value: 'manual' },
+    { label: 'Skip', value: 'skip' }
   ]
 
-  const choice = await select({
+  const choice = await p.select({
     message: 'Configure settings for this account?',
-    choices,
-    loop: false
+    options
   })
+
+  if (p.isCancel(choice)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (choice === 'skip') {
     return
@@ -223,10 +253,41 @@ export async function promptSyncSettings(accountName: string): Promise<void> {
 
   if (choice === 'common' && commonSettings) {
     await saveAccountSettings(accountDir, commonSettings)
-    console.log('Common settings applied.')
+    p.log.success('Common settings applied.')
   } else if (choice === 'global') {
     await syncFromGlobal(accountDir)
   } else if (choice === 'manual') {
     await editManually(accountDir)
+  }
+
+  await promptSyncSkills(accountDir)
+}
+
+async function promptSyncSkills(accountDir: string): Promise<void> {
+  const hasSkills = await globalSkillsExist()
+  if (!hasSkills) {
+    return
+  }
+
+  const method = await p.select({
+    message: 'Sync skills directory from ~/.claude/skills?',
+    options: [
+      { label: 'Symlink', value: 'symlink', hint: 'recommended, shares the same directory' },
+      { label: 'Copy', value: 'copy', hint: 'independent copy' },
+      { label: 'Skip', value: 'skip' }
+    ]
+  })
+
+  if (p.isCancel(method)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
+
+  if (method === 'symlink') {
+    await symlinkSkills(accountDir)
+    p.log.success('Skills directory symlinked.')
+  } else if (method === 'copy') {
+    await copySkills(accountDir)
+    p.log.success('Skills directory copied.')
   }
 }

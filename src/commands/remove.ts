@@ -1,24 +1,29 @@
-import { confirm } from '@inquirer/prompts'
+import * as p from '@clack/prompts'
+import pc from 'picocolors'
 import { removeAccountDir } from '../lib/accounts.js'
 import { getAccount, removeAccount } from '../lib/config.js'
 
 export async function removeCommand(name: string): Promise<void> {
   const existing = await getAccount(name)
   if (!existing) {
-    console.error(`Error: Account "${name}" not found.`)
+    p.log.error(pc.red(`Error: Account "${name}" not found.`))
     process.exit(1)
   }
 
-  const confirmed = await confirm({
-    message: `Are you sure you want to remove account '${name}'?`,
-    default: false
+  const confirmed = await p.confirm({
+    message: `Are you sure you want to remove account '${name}'?`
   })
+
+  if (p.isCancel(confirmed)) {
+    p.cancel('Operation cancelled')
+    process.exit(0)
+  }
 
   if (confirmed) {
     await removeAccount(name)
     await removeAccountDir(name)
-    console.log(`Account "${name}" removed.`)
+    p.log.success(`Account "${name}" removed.`)
   } else {
-    console.log('Cancelled.')
+    p.log.info('Cancelled.')
   }
 }

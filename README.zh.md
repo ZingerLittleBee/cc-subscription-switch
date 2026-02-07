@@ -70,9 +70,13 @@ ccss sync <name>
    - 应用 `~/.cc-subscription-switch/settings.json` 中的通用设置
    - 从全局设置 `~/.claude/settings.json` 同步（排除账号特有字段和 env）
    - 手动编辑设置
-4. Claude 会打开进行首次登录（引导流程）
-5. 完成登录后，在 Claude 中输入 `/exit` 返回
-6. 登录成功后账号即添加完成
+4. 同步 skills 目录（可选，当 `~/.claude/skills/` 存在时）：
+   - **软链接**（推荐）— 共享同一目录，修改在所有账号间同步
+   - **复制** — 创建独立副本
+   - **跳过**
+5. Claude 会打开进行首次登录（引导流程）
+6. 完成登录后，在 Claude 中输入 `/exit` 返回
+7. 登录成功后账号即添加完成
 
 ### 设置同步
 
@@ -85,6 +89,14 @@ CCSS 支持在账号之间同步设置：
 - `accountId`、`userId`、`email`、`oauthAccount`、`primaryOrganization`、`env`
 
 使用 `ccss sync <name>` 为已有账号配置设置，或将当前账号的设置保存为通用设置。
+
+### Skills 同步
+
+添加账号或运行 `ccss sync <name>` 时，如果 `~/.claude/skills/` 存在且非空，会提示同步 skills 目录：
+
+- **软链接**：创建指向 `~/.claude/skills/` 的符号链接 — 所有账号共享同一 skills，修改即时同步。
+- **复制**：为该账号创建独立的 skills 目录副本。
+- **跳过**：不同步 skills。
 
 ## 开发
 

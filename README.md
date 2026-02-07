@@ -22,17 +22,21 @@ npx cc-subscription-switch
 bunx cc-subscription-switch
 ```
 
-## Usage
+## Quick start
 
-### Interactive account selector
+```bash
+ccss
+```
+
+That's it — an interactive TUI guides you through account selection and launches Claude.
 
 ![Interactive account selector](./snapshots/select.png)
 
-```bash
-# Select account and launch Claude
-ccss
+## Advanced usage
 
-# Pass arguments to Claude
+### Pass arguments to Claude
+
+```bash
 ccss -p "help me"
 ccss --model sonnet
 ccss --dangerously-skip-permissions
@@ -41,23 +45,12 @@ ccss --dangerously-skip-permissions
 ### Account management
 
 ```bash
-# Add a new account
-ccss add <name>
-
-# Remove an account
-ccss remove <name>
-
-# List all accounts (with usage bars)
-ccss list
-
-# Show current account (with usage bars)
-ccss whoami
-
-# Show config directory path
-ccss config
-
-# Sync settings for an account
-ccss sync <name>
+ccss add <name>       # Add a new account
+ccss remove <name>    # Remove an account
+ccss list             # List all accounts (with usage bars)
+ccss whoami           # Show current account (with usage bars)
+ccss config           # Show config directory path
+ccss sync <name>      # Sync settings for an account
 ```
 
 ### Usage metrics
@@ -65,11 +58,8 @@ ccss sync <name>
 ![Usage metrics](./snapshots/usage.png)
 
 ```bash
-# Show usage for current account
-ccss usage
-
-# Show usage for all accounts
-ccss usage --all
+ccss usage            # Show usage for current account
+ccss usage --all      # Show usage for all accounts
 ```
 
 Displays 5-hour and 7-day utilization as color-coded progress bars (green → yellow → red), plus extra credits if enabled. Data is cached for 5 minutes. Requires macOS (reads OAuth credentials from Keychain or `.credentials.json`).

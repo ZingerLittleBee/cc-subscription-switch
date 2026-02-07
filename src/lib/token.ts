@@ -1,4 +1,5 @@
-import type { KeychainCredentials } from './keychain.js'
+import type { CredentialSource, KeychainCredentials } from './keychain.js'
+import { saveCredentials } from './keychain.js'
 
 const OAUTH_CLIENT_ID = '9d1c250a-e61b-44d9-88ed-5944d1962f5e'
 const TOKEN_ENDPOINT = 'https://platform.claude.com/v1/oauth/token'
@@ -44,7 +45,11 @@ export async function refreshToken(credentials: KeychainCredentials): Promise<Ke
   }
 }
 
-export async function ensureValidToken(credentials: KeychainCredentials): Promise<string | null> {
+export async function ensureValidToken(
+  configDirPath: string,
+  source: CredentialSource,
+  credentials: KeychainCredentials
+): Promise<string | null> {
   if (!isTokenExpired(credentials.claudeAiOauth.expiresAt)) {
     return credentials.claudeAiOauth.accessToken
   }
@@ -54,5 +59,7 @@ export async function ensureValidToken(credentials: KeychainCredentials): Promis
     return null
   }
 
+  // Persist refreshed credentials back to the original source
+  saveCredentials(configDirPath, source, refreshed)
   return refreshed.claudeAiOauth.accessToken
 }

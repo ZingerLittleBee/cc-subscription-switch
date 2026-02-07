@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { getAccountDir } from './accounts.js'
-import { readKeychainCredentials } from './keychain.js'
+import { loadCredentials } from './keychain.js'
 import { ensureValidToken } from './token.js'
 
 export interface UtilizationMetric {
@@ -86,12 +86,12 @@ export async function getAccountUsage(accountName: string): Promise<UsageData | 
   }
 
   const configDirPath = getAccountDir(accountName)
-  const credentials = readKeychainCredentials(configDirPath)
-  if (!credentials) {
+  const loaded = loadCredentials(configDirPath)
+  if (!loaded) {
     return null
   }
 
-  const token = await ensureValidToken(credentials)
+  const token = await ensureValidToken(configDirPath, loaded.source, loaded.credentials)
   if (!token) {
     return null
   }

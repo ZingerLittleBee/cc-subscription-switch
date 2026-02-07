@@ -14,7 +14,7 @@ const program = new Command()
 program
   .name('ccss')
   .description('Claude Code Subscription Switch')
-  .version('1.0.0')
+  .version('1.1.0')
   .argument('[args...]', 'arguments to pass to claude')
   .allowUnknownOption()
   .passThroughOptions()
@@ -64,12 +64,5 @@ program
   .action(async (name: string) => {
     await syncSettingsCommand(name)
   })
-
-process.on('uncaughtException', (err) => {
-  if (err.name === 'ExitPromptError') {
-    process.exit(0)
-  }
-  throw err
-})
 
 program.parse()

@@ -1,3 +1,5 @@
+import * as p from '@clack/prompts'
+import pc from 'picocolors'
 import { loadConfig } from '../lib/config.js'
 
 export async function whoamiCommand(): Promise<void> {
@@ -5,16 +7,16 @@ export async function whoamiCommand(): Promise<void> {
   const defaultName = config.defaultAccount
 
   if (!defaultName) {
-    console.log('No default account set.')
+    p.log.info('No default account set.')
     return
   }
 
   const account = config.accounts.find((a) => a.name === defaultName)
   if (!account) {
-    console.log('No default account set.')
+    p.log.info('No default account set.')
     return
   }
 
-  const desc = account.description ? ` - ${account.description}` : ''
-  console.log(`Current account: ${account.name}${desc}`)
+  const desc = account.description ? pc.dim(` - ${account.description}`) : ''
+  p.log.info(`Current account: ${pc.cyan(account.name)}${desc}`)
 }

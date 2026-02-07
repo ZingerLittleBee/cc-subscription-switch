@@ -2,6 +2,8 @@ import * as p from '@clack/prompts'
 import pc from 'picocolors'
 import { validateAccountDir } from '../lib/accounts.js'
 import { loadConfig } from '../lib/config.js'
+import { renderInlineUsage } from '../lib/display.js'
+import { getAllAccountUsage } from '../lib/usage.js'
 
 export async function listCommand(): Promise<void> {
   const config = await loadConfig()
@@ -11,6 +13,9 @@ export async function listCommand(): Promise<void> {
     return
   }
 
+  const accountNames = config.accounts.map((a) => a.name)
+  const usageMap = await getAllAccountUsage(accountNames)
+
   p.log.step(pc.bold('Accounts:'))
   for (const account of config.accounts) {
     const isDefault = account.name === config.defaultAccount
@@ -18,6 +23,8 @@ export async function listCommand(): Promise<void> {
     const marker = isDefault ? pc.green('* ') : '  '
     const status = dirValid ? pc.green('[valid]') : pc.red('[missing]')
     const desc = account.description ? pc.dim(` - ${account.description}`) : ''
-    p.log.message(`  ${marker}${pc.cyan(account.name)}${desc}  ${status}`)
+    const usage = usageMap.get(account.name)
+    const usageStr = usage ? `  ${renderInlineUsage(usage)}` : ''
+    p.log.message(`  ${marker}${pc.cyan(account.name)}${desc}  ${status}${usageStr}`)
   }
 }

@@ -22,15 +22,21 @@ npx cc-subscription-switch
 bunx cc-subscription-switch
 ```
 
-## 使用
-
-### 交互式账号选择
+## 快速开始
 
 ```bash
-# 选择账号并启动 Claude
 ccss
+```
 
-# 传递参数给 Claude
+只需一条命令 — 交互式 TUI 引导你选择账号并启动 Claude。
+
+![交互式账号选择](./snapshots/select.png)
+
+## 进阶用法
+
+### 传递参数给 Claude
+
+```bash
 ccss -p "help me"
 ccss --model sonnet
 ccss --dangerously-skip-permissions
@@ -39,24 +45,24 @@ ccss --dangerously-skip-permissions
 ### 账号管理
 
 ```bash
-# 添加新账号
-ccss add <name>
-
-# 删除账号
-ccss remove <name>
-
-# 列出所有账号
-ccss list
-
-# 显示当前账号
-ccss whoami
-
-# 显示配置目录路径
-ccss config
-
-# 同步账号设置
-ccss sync <name>
+ccss add <name>       # 添加新账号
+ccss remove <name>    # 删除账号
+ccss list             # 列出所有账号（附带用量进度条）
+ccss whoami           # 显示当前账号（附带用量进度条）
+ccss config           # 显示配置目录路径
+ccss sync <name>      # 同步账号设置
 ```
+
+### 用量查看
+
+![用量查看](./snapshots/usage.png)
+
+```bash
+ccss usage            # 查看当前账号用量
+ccss usage --all      # 查看所有账号用量
+```
+
+显示 5 小时和 7 天利用率的彩色进度条（绿色 → 黄色 → 红色），以及额外积分使用情况（如已启用）。数据缓存 5 分钟。需要 macOS（从 Keychain 或 `.credentials.json` 读取 OAuth 凭证）。
 
 ## 工作原理
 

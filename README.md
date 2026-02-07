@@ -26,6 +26,8 @@ bunx cc-subscription-switch
 
 ### Interactive account selector
 
+![Interactive account selector](./snapshots/select.png)
+
 ```bash
 # Select account and launch Claude
 ccss
@@ -59,6 +61,8 @@ ccss sync <name>
 ```
 
 ### Usage metrics
+
+![Usage metrics](./snapshots/usage.png)
 
 ```bash
 # Show usage for current account

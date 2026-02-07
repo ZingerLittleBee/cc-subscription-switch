@@ -26,6 +26,8 @@ bunx cc-subscription-switch
 
 ### 交互式账号选择
 
+![交互式账号选择](./snapshots/select.png)
+
 ```bash
 # 选择账号并启动 Claude
 ccss
@@ -59,6 +61,8 @@ ccss sync <name>
 ```
 
 ### 用量查看
+
+![用量查看](./snapshots/usage.png)
 
 ```bash
 # 查看当前账号用量

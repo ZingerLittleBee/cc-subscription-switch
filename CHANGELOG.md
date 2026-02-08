@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0] - 2026-02-08
+
+### Fixed
+
+- Skills sync prompt now shows even when skipping settings sync during account setup
+
 ## [1.2.0] - 2026-02-08
 
 ### Added

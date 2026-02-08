@@ -247,17 +247,15 @@ export async function promptSyncSettings(accountName: string): Promise<void> {
     process.exit(0)
   }
 
-  if (choice === 'skip') {
-    return
-  }
-
-  if (choice === 'common' && commonSettings) {
-    await saveAccountSettings(accountDir, commonSettings)
-    p.log.success('Common settings applied.')
-  } else if (choice === 'global') {
-    await syncFromGlobal(accountDir)
-  } else if (choice === 'manual') {
-    await editManually(accountDir)
+  if (choice !== 'skip') {
+    if (choice === 'common' && commonSettings) {
+      await saveAccountSettings(accountDir, commonSettings)
+      p.log.success('Common settings applied.')
+    } else if (choice === 'global') {
+      await syncFromGlobal(accountDir)
+    } else if (choice === 'manual') {
+      await editManually(accountDir)
+    }
   }
 
   await promptSyncSkills(accountDir)
